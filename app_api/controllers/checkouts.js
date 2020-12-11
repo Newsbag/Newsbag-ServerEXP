@@ -14,7 +14,7 @@ module.exports.checkoutFromCart = function(req, res, next) {
                 reader: req.body.readerid,
                 checkoutlist: req.body.checkoutlist,
                 state: req.body.state,
-                amount: parseFloat(req.body.amount)
+                amount: parseFloat(req.body.checkoutamount)
             }, (err, checkout) => {
                 if (err) {
                     console.error(err);
@@ -89,10 +89,10 @@ module.exports.verifycheckoutFromCart = function(req, res, next) {
                         });
                    }   
                 });
-                emptyCart()
+                emptyCart(reader)
                 checkout.checkoutlist.forEach(item => {
                     // Find the publisher of the item and transfer funds to that account
-                    paymentsCreate()
+                    paymentsCreate(publication)
                 });
             }
         });

@@ -25,3 +25,4 @@ require('./reader');
 require('./publication');
 require('./payment');
 require("./payout");
+require("./checkout");
