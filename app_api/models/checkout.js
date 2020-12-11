@@ -27,7 +27,12 @@ const CheckoutSchema = new Schema({
     amount: Number,
     state: {
         type: String,
-        enum: ["failed", "success"]
+        enum: ["failed", "success"],
+        default: "initiated"
+    },
+    created_at: {
+        type: Date,
+        default: Date.now
     }
 })
 

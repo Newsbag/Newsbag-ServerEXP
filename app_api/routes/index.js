@@ -72,6 +72,7 @@ router.delete("/readers/:readerid/cart", passport.authenticate("jwt", { session:
 
 //Checkout
 router.post("/checkouts", passport.authenticate("jwt", { session: false }), ctrlCheckout.checkoutFromCart);
+router.get("/checkouts/:checkoutid", passport.authenticate("jwt", { session: false }), ctrlCheckout.verifycheckoutFromCart);
 
 
 // Publications
