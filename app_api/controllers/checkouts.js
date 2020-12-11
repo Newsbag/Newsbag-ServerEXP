@@ -12,7 +12,7 @@ module.exports.checkoutFromCart = function(req, res, next) {
             .create({
                 reference: req.body.reference,
                 reader: req.body.readerid,
-                checkoutlist: req.body.checkoutlist,
+                checkoutlist: reader.cart,
                 state: req.body.state,
                 amount: parseFloat(req.body.checkoutamount)
             }, (err, checkout) => {
