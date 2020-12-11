@@ -1,0 +1,9 @@
+# Dependencies
+node_modules
+
+# Environmental variables
+.env
+
+profile-photos
+
+uploads
