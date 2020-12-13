@@ -70,6 +70,7 @@ module.exports.checkoutFromCart = function(req, res, next) {
             .select('checkouts')
             .exec(
                 (err, reader) => {
+                    console.log('log some data', req.body)
                     if (err) {
                         sendJsonResponse(res, 400, err);
                         return;
@@ -85,6 +86,7 @@ module.exports.checkoutFromCart = function(req, res, next) {
                         //reader: req.body.reader,
                         //checkout_amount: req.body.checkout_amount
                     });
+                    console.log('log some data', req.body)
                     reader.save((err, reader) => {
                         if (err) {
                             sendJsonResponse(res, 400, err);
