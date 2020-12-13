@@ -57,7 +57,7 @@ module.exports.register = function(req, res, next) {
                         userid: user._id
                     };
                     console.debug("Creating new account");
-                    let path = `http://newsbagserver-env.eba-ymb65tjc.us-west-2.elasticbeanstalk.com/api/${req.body.accountType + "s"}`;
+                    let path = `http://localhost:8080/api/${req.body.accountType + "s"}`;
                     let requestOptions = {
                         url: path,
                         method: "POST",
@@ -125,7 +125,7 @@ module.exports.login = function(req, res, next) {
             const token = jwt.sign(payload, process.env.JWT_SECRET/* , { expiresIn: '1d' } */);
             console.log('User login successful');
             let requestOptions = {
-                url: `http://newsbagserver-env.eba-ymb65tjc.us-west-2.elasticbeanstalk.com/api/${user.account_type + "s"}?userid=${user._id}`,
+                url: `http://localhost:8080/api/${user.account_type + "s"}?userid=${user._id}`,
                 method: "GET",
                 auth: {
                     "bearer": `${token}`

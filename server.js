@@ -4,7 +4,7 @@ const logger = require('morgan');
 const passport = require('passport');
 const path = require('path');
 const cors = require('cors');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 require('./app_api/models/db');
 require('./app_api/config/passport');

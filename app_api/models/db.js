@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-let apiUrl = 'mongodb+srv://Kinky:kinkilay50@cluster0newsbag.i2vlo.mongodb.net/Cluster0Newsbag?retryWrites=true&w=majority';
+let apiUrl = 'mongodb+srv://dondemo:kinky666@clusterdemo.ypylh.mongodb.net/ClusterDemo?retryWrites=true&w=majority';
 
 if (process.env.NODE_ENV === 'production') {
     apiUrl = process.env.DATABASE_URL;
@@ -25,4 +25,3 @@ require('./reader');
 require('./publication');
 require('./payment');
 require("./payout");
-require("./checkout");

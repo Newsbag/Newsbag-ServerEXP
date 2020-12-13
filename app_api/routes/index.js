@@ -8,7 +8,6 @@ const ctrlUser = require('../controllers/users');
 const ctrlPublisher = require('../controllers/publishers');
 const ctrlReader = require('../controllers/readers');
 const ctrlCart = require('../controllers/carts');
-const ctrlCheckout = require('../controllers/checkouts');
 const ctrlComment = require('../controllers/comments');
 const ctrlPublications = require("../controllers/publications");
 const ctrlLibraries = require("../controllers/libraries");
@@ -71,8 +70,8 @@ router.delete("/readers/:readerid/cart/:itemid", passport.authenticate("jwt", { 
 router.delete("/readers/:readerid/cart", passport.authenticate("jwt", { session: false }), ctrlCart.emptyCart);
 
 //Checkout
-router.post("/checkouts", passport.authenticate("jwt", { session: false }), ctrlCheckout.checkoutFromCart);
-router.get("/checkouts/:checkoutid", passport.authenticate("jwt", { session: false }), ctrlCheckout.verifycheckoutFromCart);
+router.post("/readers/:readerid/checkout", passport.authenticate("jwt", { session: false }), ctrlCart.checkoutFromCart);
+router.get("/readers/:readerid/checkout/:checkoutid", passport.authenticate("jwt", { session: false }), ctrlCart.verifycheckoutFromCart);
 
 
 // Publications
