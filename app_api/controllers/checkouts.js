@@ -81,9 +81,9 @@ module.exports.checkoutFromCart = function(req, res, next) {
                     }
                     reader.checkouts.push({
                         state: req.body.state,
-                        checkoutlist: req.body.checkoutlist,
+                        checkoutlist: req.body.checkoutlist
                         //reader: req.body.reader,
-                        checkout_amount: req.body.checkout_amount
+                        //checkout_amount: req.body.checkout_amount
                     });
                     reader.save((err, reader) => {
                         if (err) {
