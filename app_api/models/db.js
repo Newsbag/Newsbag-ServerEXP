@@ -23,5 +23,6 @@ require('./user');
 require('./publisher');
 require('./reader');
 require('./publication');
+//require('./checkout');
 require('./payment');
 require("./payout");

@@ -29,6 +29,7 @@ module.exports.readersList = function(req, res, next) {
                     id: doc._id,
                     library: doc.library,
                     cart: doc.cart,
+                    checkouts: doc.checkouts,
                     user_id: doc.user
                 });
             });
@@ -65,6 +66,7 @@ module.exports.readersReadOne = function(req, res, next) {
             .findById(req.params.readerid)
             .populate("wishlist")
             .populate("cart/item")
+            .populate("checkouts")
             .populate("library")
             .populate("user")
             .exec((err, reader) => {
