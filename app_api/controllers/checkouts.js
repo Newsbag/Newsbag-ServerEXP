@@ -63,14 +63,16 @@ module.exports.checkoutFromCart = function(req, res, next) {
 */
 
 module.exports.checkoutFromCart = function(req, res, next) {
+    
     let readerid = req.params.readerid;
+    //console.log('log some data', readerid)
     if (req.params.readerid && req.body) {
         Reader
             .findById(readerid)
             .select('checkouts')
             .exec(
                 (err, reader) => {
-                    console.log('log some data', req.body)
+                    //console.log('log some data', req.body)
                     if (err) {
                         sendJsonResponse(res, 400, err);
                         return;
@@ -82,9 +84,9 @@ module.exports.checkoutFromCart = function(req, res, next) {
                     }
                     reader.checkouts.push({
                         state: req.body.state,
-                        checkoutlist: req.body.checkoutlist
-                        //reader: req.body.reader,
-                        //checkout_amount: req.body.checkout_amount
+                        checkoutlist: req.body.checkoutlist,
+                        reference: req.body.reference,
+                        amount: req.body.amount
                     });
                     console.log('log some data', req.body)
                     reader.save((err, reader) => {
@@ -94,6 +96,38 @@ module.exports.checkoutFromCart = function(req, res, next) {
                             sendJsonResponse(res, 201, reader.checkouts);
                         }
                     });
+                    const https = require('https')
+                    const params = JSON.stringify({
+                    "email": `${reader.user.email}`,
+                    "reference": `${checkoutid}`,
+                    "callback_url": `/readers/${readerid}/checkout/${checkoutid}`,
+                    "channels": ['card', 'mobile_money'],
+                    "amount": `${reader.checkouts.amount}`
+                    })
+                    const options = {
+                        hostname: 'api.paystack.co',
+                        port: 443,
+                        path: '/transaction/initialize',
+                        method: 'POST',
+                        headers: {
+                          Authorization: process.env.SECRET_KEY,
+                          'Content-Type': 'application/json'
+                        }
+                    }
+                    const reqy = https.request(options, res => {
+                        let data = ''
+                        resp.on('data', (chunk) => {
+                          data += chunk
+                        });
+                        resp.on('end', () => {
+                            console.log(JSON.parse(data))
+                        })
+                    }).on('error', error => {
+                      console.error(error)
+                    })
+
+                    reqy.write(params)
+                    reqy.end()
                 }
             );
     } else {
@@ -106,17 +140,17 @@ module.exports.checkoutFromCart = function(req, res, next) {
 
 
 module.exports.verifycheckoutFromCart = function(req, res, next) {
-    if (req.params && req.params.checkoutid) {  
-        Checkout
-        .findById(req.params.checkoutid)
-        .select('state checkoutlist')
-        .exec((err, checkout) => {
+    if (req.params && req.params.readerid && req.params.checkoutid) {  
+        Reader
+        .findById(req.params.readerid && req.params.checkoutid)
+        .select('cart checkouts')
+        .exec((err, reader) => {
             if (err) {
                 sendJsonResponse(res, 400, err);
                 return;
-            } else if (!checkout) {
+            } else if (!reader) {
                 sendJsonResponse(res, 404, {
-                "message": "checkoutid not found"
+                "message": "readerid not found"
                 });
             return;
             }
@@ -141,9 +175,9 @@ module.exports.verifycheckoutFromCart = function(req, res, next) {
             }).on('error', error => {
               console.error(error)
             })
-            if (response.data.status === false) {
-                checkout.state = "failed"
-                checkout.save((err, checkout) => {
+            if (response.data.status = false) {
+                reader.checkout.state = "failed"
+                reader.save((err, reader) => {
                     if (err) {
                         sendJsonResponse(res, 404, err);
                     } else {
@@ -153,8 +187,8 @@ module.exports.verifycheckoutFromCart = function(req, res, next) {
                     }
                 });
             } else {
-                checkout.state = "success"
-                checkout.save((err, checkout) => {
+                reader.checkout.state = "success"
+                reader.save((err, reader) => {
                     if (err) {
                         sendJsonResponse(res, 404, err);
                     } else {
@@ -163,16 +197,25 @@ module.exports.verifycheckoutFromCart = function(req, res, next) {
                         });
                    }   
                 });
-                emptyCart(reader)
-                checkout.checkoutlist.forEach(item => {
+                reader.cart.forEach(item => {
                     // Find the publisher of the item and transfer funds to that account
                     paymentsCreate(publication)
+                });
+                emptyCart(reader)
+                reader.save((err, reader) => {
+                    if (err) {
+                        sendJsonResponse(res, 404, err);
+                    } else {
+                        sendJsonResponse(res, 200, {
+                        "message": "cart emptied"
+                        });
+                   }   
                 });
             }
         });
     } else {
         sendJsonResponse(res, 404, {
-            "message": "Not found, checkoutid and reference are both required"
+            "message": "Not found, checkoutid and readerid are both required"
         });    
     }    
 };

@@ -112,6 +112,17 @@ module.exports.publicationsCreate = function(req, res, next) {
                     sendJsonResponse(res, 201, publication);
                 }
             });
+            //Publication
+            //publication.prices.push(prices);
+            /*publication.save((err, publication) => {
+                if (err) {
+                    sendJsonResponse(res, 404, err);
+                } else {
+                    sendJsonResponse(res, 200, {
+                    "message": "prices updated"
+                    });
+               }   
+            });*/
         });
     } else {
         sendJsonResponse(res, 404, {

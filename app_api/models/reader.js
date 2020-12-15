@@ -13,6 +13,10 @@ const CartSchema = new Schema({
 })
 
 const CheckoutSchema = new Schema({
+    reference: {
+        type: String,
+        unique: true
+    },
     checkoutlist: [{
         item: {
             type: Schema.Types.ObjectId,
@@ -21,14 +25,17 @@ const CheckoutSchema = new Schema({
         subscription: {
             type: String,
             enum: ["one-time", "1 month", "2 months", "3 months", "6 months", "1 year"]
-
-        },
-        amount: Number
+            
+        }
     }],
     state: {
         type: String,
         enum: ["failed", "initiated", "success"],
         default: "initiated"
+    },
+    amount: {
+        type: Number,
+        min: 0
     },
     created_at: {
         type: Date,
