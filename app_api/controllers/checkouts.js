@@ -82,9 +82,13 @@ module.exports.checkoutFromCart = function(req, res, next) {
                         });
                         return;
                     }
+                    let checkoutlist = reader.cart;
+                    let email = reader.user.email;
+                    let state = "initiated";
                     reader.checkouts.push({
-                        state: req.body.state,
-                        checkoutlist: req.body.checkoutlist,
+                        email: email,
+                        state: state,
+                        checkoutlist: checkoutlist,
                         reference: req.body.reference,
                         amount: req.body.amount
                     });
@@ -96,13 +100,14 @@ module.exports.checkoutFromCart = function(req, res, next) {
                             sendJsonResponse(res, 201, reader.checkouts);
                         }
                     });
+                    //let checkoutid = req.query.checkoutid;
                     const https = require('https')
                     const params = JSON.stringify({
                     "email": `${reader.user.email}`,
-                    "reference": `${checkoutid}`,
-                    "callback_url": `/readers/${readerid}/checkout/${checkoutid}`,
-                    "channels": ['card', 'mobile_money'],
-                    "amount": `${reader.checkouts.amount}`
+                    "reference": `${reader.checkouts.reference}`,
+                    "amount": `${reader.checkouts.amount}` * 100,
+                    "channels": ['card','mobile_money'],
+                    "callback_url": `http://localhost:8080/api/readers/${readerid}/checkout/${reader.checkouts.checkoutid}`
                     })
                     const options = {
                         hostname: 'api.paystack.co',
@@ -158,7 +163,7 @@ module.exports.verifycheckoutFromCart = function(req, res, next) {
             const options = {
               hostname: 'api.paystack.co',
               port: 443,
-              path: `/transaction/verify/${req.params.checkoutid}`, //link to checkout.reference before execution
+              path: `/transaction/verify/${reader.checkouts.reference}`, //link to checkout.reference before execution
               method: 'GET',
               headers: {
                 Authorization: process.env.SECRET_KEY //add secret key in .env
@@ -176,7 +181,9 @@ module.exports.verifycheckoutFromCart = function(req, res, next) {
               console.error(error)
             })
             if (response.data.status = false) {
-                reader.checkout.state = "failed"
+                reader.checkouts.push({
+                    state: "failed"
+                });
                 reader.save((err, reader) => {
                     if (err) {
                         sendJsonResponse(res, 404, err);
@@ -187,7 +194,9 @@ module.exports.verifycheckoutFromCart = function(req, res, next) {
                     }
                 });
             } else {
-                reader.checkout.state = "success"
+                reader.checkouts.push({
+                    state: "success"
+                });
                 reader.save((err, reader) => {
                     if (err) {
                         sendJsonResponse(res, 404, err);
@@ -199,9 +208,9 @@ module.exports.verifycheckoutFromCart = function(req, res, next) {
                 });
                 reader.cart.forEach(item => {
                     // Find the publisher of the item and transfer funds to that account
-                    paymentsCreate(publication)
+                    paymentsCreate()
                 });
-                emptyCart(reader)
+                emptyCart()
                 reader.save((err, reader) => {
                     if (err) {
                         sendJsonResponse(res, 404, err);

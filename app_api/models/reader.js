@@ -13,6 +13,10 @@ const CartSchema = new Schema({
 })
 
 const CheckoutSchema = new Schema({
+    email: {
+        type: String,
+        required: true
+    },
     reference: {
         type: String,
         unique: true
